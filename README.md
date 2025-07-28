@@ -1,6 +1,6 @@
 # The Road to 56' GFX Search
 
-This repository creates the [The Road to 56' GFX Search website](https://kaiserreich.github.io/Kaiserreich-4-GFX-Search/), helping you to easily find GFX.
+This repository creates the [The Road to 56' GFX Search website](https://xaelorichero-02.github.io/RT56-GFX-Search/), helping you to easily find GFX.
 
 It auto generates from the main repo, so you don't need to do anything when you add, remove or adjust GFX.
 
