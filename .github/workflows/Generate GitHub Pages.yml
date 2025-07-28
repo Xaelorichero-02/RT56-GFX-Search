@@ -1,0 +1,60 @@
+name: Generate GitHub Pages
+
+on:
+  push:
+    branches:
+    - master
+    - gh-pages
+    paths:
+    - '.github/workflows/Generate GitHub Pages.yml'
+  repository_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Kaiserreich/Kaiserreich-4-Development master branch
+      uses: actions/checkout@v3
+      with:
+        token: ${{ secrets.GHPAGES_PUSH_TOKEN }}
+        ref: master
+        path: ''
+        repository: 'Kaiserreich/Kaiserreich-4-Development'
+    - name: Checkout master branch
+      uses: actions/checkout@v2
+      with:
+        token: ${{ secrets.GHPAGES_PUSH_TOKEN }}
+        ref: master
+        path: gh-pages
+    - name: Generate webpage
+      uses: Yard1/hoi4-icon-search-action@master
+      with:
+        goals: './interface/kaiserreich/goals.gfx'
+        ideas: './interface/kaiserreich/ideas.gfx ./interface/kaiserreich/ideas_africa.gfx ./interface/kaiserreich/ideas_americas.gfx ./interface/kaiserreich/ideas_asia.gfx ./interface/kaiserreich/ideas_europe.gfx'
+        texticons: './interface/kaiserreich/texticons.gfx'
+        events: './interface/kaiserreich/event_pictures.gfx'
+        newsEvents: './interface/kaiserreich/event_news_pictures.gfx'
+        agencies: './interface/kaiserreich/countryintelligenceagencyview.gfx'
+        decisions: './interface/kaiserreich/decisions.gfx'
+        decisionsCat: './interface/kaiserreich/decisions_categories.gfx'
+        decisionsPics: './interface/kaiserreich/decisions_categories_pictures.gfx'
+        favicon: './kr_icon.png'
+        title: 'Kaiserreich GFX Search'
+        modPath: 'gh-pages'
+        modifiedFiles: ${{ github.event.client_payload.files }}
+    - name: Commit and push files
+      run: |
+        cd $GITHUB_WORKSPACE/gh-pages
+        if [ -z "$(git status --porcelain)" ]; then 
+          exit 0
+        fi
+        sudo rm -rf gfx/leaders
+        PYDATE=$(python -c "import datetime; print(datetime.datetime.utcnow())")
+        sed -i "s/@UPDATE_DATE/${PYDATE}/g" index.html
+        git config --global user.email "antoni.baum@protonmail.com"
+        git config --global user.name "Yard1"
+        git pull --no-rebase
+        git pull --no-rebase
+        git add -A
+        git commit -m "Update webpage (automatic)"
+        git push
